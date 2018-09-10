@@ -2,6 +2,13 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 import argparse
+import os
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_POSITIVE = os.path.join(_HERE, "positive.txt")
+_NEGATIVE = os.path.join(_HERE, "negative.txt")
+_NEUTRAL = os.path.join(_HERE, "neutral.txt")
+_UNKNOWN = os.path.join(_HERE, "unknown.txt")
 _model = None
 
 
@@ -27,21 +34,21 @@ def _make_features(s):
 def _initialize():
     positives = _take_examples("Enter at least one positive examples (empty to exit)")
     negatives = _take_examples("Enter at least one positive examples (empty to exit)")
-    fo = open("positive.txt", "w")
-    fo.writelines(positives)
+    fo = open(_POSITIVE, "w")
+    fo.writelines([line + "\n" for line in positives])
     fo.close()
-    fo = open("negative.txt", "w")
-    fo.writelines(negatives)
+    fo = open(_NEGATIVE, "w")
+    fo.writelines([line + "\n" for line in negatives])
     fo.close()
-    fo = open("neutral.txt", "w")
+    fo = open(_NEUTRAL, "w")
     fo.close()
     _learn()
     _describe()
     
 
 def _make_training_data():
-    pos_x = open('positive.txt').readlines()
-    neg_x = open('negative.txt').readlines()
+    pos_x = open(_POSITIVE).readlines()
+    neg_x = open(_NEGATIVE).readlines()
     X = []
     N = len(pos_x) + len(neg_x)
     Y = np.zeros((N, ))
@@ -71,15 +78,17 @@ def _learn():
 
 
 def _describe():
-    pos = open('positive.txt').readlines()
-    neg = open('negative.txt').readlines()
-    unknowns = open('unknown.txt').readlines()
+    pos = open(_POSITIVE).readlines()
+    neg = open(_NEGATIVE).readlines()
+    neu = open(_NEUTRAL).readlines()
+    unknowns = open(_UNKNOWN).readlines()
 
     X = []
     used_lines = []
     for line in unknowns:
         if line in pos: continue
         if line in neg: continue
+        if line in neu: continue
         line = line.rstrip()
         X.append(_make_features(line))
         used_lines.append(line)
