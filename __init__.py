@@ -77,7 +77,29 @@ def _learn():
     _model.fit(X, Y)
 
 
-def _describe():
+def _interactive():
+    while True:
+        _learn()
+        scored_lines = _get_scored_lines()
+        scored_lines.sort(key=lambda x: abs(x[0] - 0.5))
+        score, line = scored_lines[0]
+        print("{}: {:.4f}".format(line, score))
+        while True:
+            s = input("negative(z), neutral(x), positive(c), quit(q)>")
+            if s == "q":
+                return
+            if s == "z":
+                open(_NEGATIVE, "a").write(line + "\n")
+                break
+            if s == "x":
+                open(_NEUTRAL, "a").write(line + "\n")
+                break
+            if s == "c":
+                open(_POSITIVE, "a").write(line + "\n")
+                break
+                
+
+def _get_scored_lines():
     pos = open(_POSITIVE).readlines()
     neg = open(_NEGATIVE).readlines()
     neu = open(_NEUTRAL).readlines()
@@ -94,8 +116,7 @@ def _describe():
         used_lines.append(line)
 
     if len(X) == 0:
-        print("Error: unknown.txtに教師データに含まれないデータがない")
-        return
+        raise RuntimeError("Error: unknown.txtに教師データに含まれないデータがない")
 
     X = np.array(X)
     probs = _model.predict_proba(X)
@@ -103,6 +124,11 @@ def _describe():
     for i in range(len(used_lines)):
         scored_lines.append((probs[i, 1], used_lines[i]))
 
+    return scored_lines
+
+
+def _describe():
+    scored_lines = _get_scored_lines()
     scored_lines.sort()
     print("BEST 5")
     for score, line in scored_lines[-1:-6:-1]:
@@ -119,10 +145,18 @@ def _describe():
 
     
 def ppoi(line):
+    return to_bool(line)
+
+
+def to_prob(line):
     if not _model:
         _learn()
 
-    prob = _model.predict_proba(_make_features(line).reshape(1, -1))[0, 1]
+    return _model.predict_proba(_make_features(line).reshape(1, -1))[0, 1]
+
+
+def to_bool(line):
+    prob = to_prob(line)
     return (prob > 0.5)
 
 
@@ -131,6 +165,7 @@ def _main():
     parser.add_argument('--initialize', action='store_true')
     parser.add_argument('--learn', action='store_true')
     parser.add_argument('--describe', action='store_true')
+    parser.add_argument('--interactive', action='store_true')
     args = parser.parse_args()
 
     if args.initialize:
@@ -142,6 +177,9 @@ def _main():
     if args.describe:
         _learn()
         _describe()
+
+    if args.interactive:
+        _interactive()
 
 
 if __name__ == "__main__":
