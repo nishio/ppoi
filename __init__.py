@@ -44,7 +44,7 @@ def _initialize():
     fo.close()
     _learn()
     _describe()
-    
+
 
 def _make_training_data():
     pos_x = open(_POSITIVE).readlines()
@@ -64,7 +64,7 @@ def _make_training_data():
         i = offset + i_
         X.append(_make_features(line))
         Y[i] = 0
-    
+
     X = np.array(X)
     return X, Y
 
@@ -97,7 +97,36 @@ def _interactive():
             if s == "c":
                 open(_POSITIVE, "a").write(line + "\n")
                 break
-                
+
+
+def _find():
+    query = input("input query> ")
+    pos = open(_POSITIVE).readlines()
+    neg = open(_NEGATIVE).readlines()
+    neu = open(_NEUTRAL).readlines()
+    unknowns = open(_UNKNOWN).readlines()
+
+    for line in unknowns:
+        if query not in line: continue
+        if line in pos: continue
+        if line in neg: continue
+        if line in neu: continue
+        line = line.rstrip()
+        print(line)
+        while True:
+            s = input("negative(z), neutral(x), positive(c), quit(q)>")
+            if s == "q":
+                return
+            if s == "z":
+                open(_NEGATIVE, "a").write(line + "\n")
+                break
+            if s == "x":
+                open(_NEUTRAL, "a").write(line + "\n")
+                break
+            if s == "c":
+                open(_POSITIVE, "a").write(line + "\n")
+                break
+
 
 def _get_scored_lines():
     pos = open(_POSITIVE).readlines()
@@ -133,7 +162,7 @@ def _describe():
     print("BEST 5")
     for score, line in scored_lines[-1:-6:-1]:
         print("{}: {:.4f}".format(line, score))
-    
+
     print("\nWORST 5")
     for score, line in scored_lines[:5]:
         print("{}: {:.4f}".format(line, score))
@@ -143,7 +172,7 @@ def _describe():
     for score, line in scored_lines[:5]:
         print("{}: {:.4f}".format(line, score))
 
-    
+
 def ppoi(line):
     return to_bool(line)
 
@@ -166,6 +195,7 @@ def _main():
     parser.add_argument('--learn', action='store_true')
     parser.add_argument('--describe', action='store_true')
     parser.add_argument('--interactive', action='store_true')
+    parser.add_argument('--find', action='store_true')
     args = parser.parse_args()
 
     if args.initialize:
@@ -180,6 +210,9 @@ def _main():
 
     if args.interactive:
         _interactive()
+
+    if args.find:
+        _find()
 
 
 if __name__ == "__main__":
