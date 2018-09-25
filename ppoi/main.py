@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-import argparse
 import os
+from .user import make_features as _make_features
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _POSITIVE = os.path.join(_HERE, "positive.txt")
@@ -20,15 +19,6 @@ def _take_examples(message):
         if not line and examples:
             return examples
         examples.append(line)
-
-
-def _make_features(s):
-    "take a string, return np.array"
-    BEST100 = (" のーンenoia0スるrトtルい1イクとアな,をリsにはッ2シc"
-               "的学知ラlテジプすpしhタグデdてィ.か・たm化3ロフ理でレ"
-               "ドu生がニ性人4マコSムg95法きりエョ識yP分76-8bれミ自経えT論く")
-    s = set(s)
-    return np.array([(1 if c in s else 0) for c in BEST100])
 
 
 def _initialize():
@@ -189,31 +179,4 @@ def to_bool(line):
     return (prob > 0.5)
 
 
-def _main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--initialize', action='store_true')
-    parser.add_argument('--learn', action='store_true')
-    parser.add_argument('--describe', action='store_true')
-    parser.add_argument('--interactive', action='store_true')
-    parser.add_argument('--find', action='store_true')
-    args = parser.parse_args()
 
-    if args.initialize:
-        _initialize()
-
-    if args.learn:
-        _learn()
-
-    if args.describe:
-        _learn()
-        _describe()
-
-    if args.interactive:
-        _interactive()
-
-    if args.find:
-        _find()
-
-
-if __name__ == "__main__":
-    _main()
