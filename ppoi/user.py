@@ -24,7 +24,7 @@ def default_make_features(s):
                "的学知ラlテジプすpしhタグデdてィ.か・たm化3ロフ理でレ"
                "ドu生がニ性人4マコSムg95法きりエョ識yP分76-8bれミ自経えT論く")
     s = set(s)
-    return np.array([(1 if c in s else 0) for c in BEST100] + nnl + extra)
+    return np.array([(1 if c in s else 0) for c in BEST100])
     
 
 make_features = default_make_features

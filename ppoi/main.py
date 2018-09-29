@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 import os
