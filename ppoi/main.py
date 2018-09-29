@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 import os
 from .user import make_features as _make_features
+from time import clock
+from random import random
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _POSITIVE = os.path.join(_HERE, "positive.txt")
@@ -69,10 +71,15 @@ def _learn():
 
 
 def _interactive():
+    down_sampling = 1.0
     while True:
         _learn()
-        scored_lines = _get_scored_lines()
+        start_time = clock()
+        scored_lines = _get_scored_lines(down_sampling)
         scored_lines.sort(key=lambda x: abs(x[0] - 0.5))
+        # 約1秒で結果が返るようにダウンサンプリングする
+        down_sampling = (clock() - start_time) * down_sampling
+
         score, line = scored_lines[0]
         print("{}: {:.4f}".format(line, score))
         while True:
@@ -119,11 +126,14 @@ def _find():
                 break
 
 
-def _get_scored_lines():
+def _get_scored_lines(down_sampling=1.0):
     pos = open(_POSITIVE).readlines()
     neg = open(_NEGATIVE).readlines()
     neu = open(_NEUTRAL).readlines()
     unknowns = open(_UNKNOWN).readlines()
+    if down_sampling > 1.0:
+        p = 1.0 / down_sampling
+        unknowns = [line for line in unknowns if random() < p]
 
     X = []
     used_lines = []
