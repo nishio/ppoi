@@ -107,10 +107,14 @@ def _find():
     unknowns = open(_UNKNOWN).readlines()
 
     for line in unknowns:
-        if query not in line: continue
-        if line in pos: continue
-        if line in neg: continue
-        if line in neu: continue
+        if query not in line:
+            continue
+        if line in pos:
+            continue
+        if line in neg:
+            continue
+        if line in neu:
+            continue
         line = line.rstrip()
         print(line)
         while True:
@@ -140,9 +144,12 @@ def _get_scored_lines(down_sampling=1.0):
     X = []
     used_lines = []
     for line in unknowns:
-        if line in pos: continue
-        if line in neg: continue
-        if line in neu: continue
+        if line in pos:
+            continue
+        if line in neg:
+            continue
+        if line in neu:
+            continue
         line = line.rstrip()
         X.append(_make_features(line))
         used_lines.append(line)
@@ -190,6 +197,3 @@ def to_prob(line):
 def to_bool(line):
     prob = to_prob(line)
     return (prob > 0.5)
-
-
-
