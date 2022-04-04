@@ -25,8 +25,10 @@ def _take_examples(message):
 
 
 def _initialize():
-    positives = _take_examples("Enter at least one positive examples (empty to exit)")
-    negatives = _take_examples("Enter at least one positive examples (empty to exit)")
+    positives = _take_examples(
+        "Enter at least one positive examples (empty to exit)")
+    negatives = _take_examples(
+        "Enter at least one negative examples (empty to exit)")
     fo = open(_POSITIVE, "w")
     fo.writelines([line + "\n" for line in positives])
     fo.close()
