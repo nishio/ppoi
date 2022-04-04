@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 import os
 from .user import make_features as _make_features
-from time import clock
+from time import perf_counter
 from random import random
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -74,11 +74,11 @@ def _interactive():
     down_sampling = 1.0
     while True:
         _learn()
-        start_time = clock()
+        start_time = perf_counter()
         scored_lines = _get_scored_lines(down_sampling)
         scored_lines.sort(key=lambda x: abs(x[0] - 0.5))
         # 約1秒で結果が返るようにダウンサンプリングする
-        down_sampling = (clock() - start_time) * down_sampling
+        down_sampling = (perf_counter() - start_time) * down_sampling
 
         score, line = scored_lines[0]
         print("{}: {:.4f}".format(line, score))
